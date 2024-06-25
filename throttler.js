@@ -56,7 +56,7 @@ class Throttler {
             }
 
             const startTime = performance.now();
-            const result = await fn();
+            await fn();
             this.#finished++;
             active--;
 
