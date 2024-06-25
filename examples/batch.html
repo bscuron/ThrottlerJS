@@ -1,0 +1,25 @@
+<html>
+  <head>
+    <script src="../throttler.js"></script>
+    <script>
+      async function foo(x) {
+          await fetch(`https://httpbin.org/delay/${x}`);
+      }
+
+      (async () => {
+          let functions = [];
+          for (let i = 0; i < 100; i++) {
+              const min = 3; // seconds
+              const max = 10; // seconds
+              const time = Math.floor(Math.random() * (max - min + 1) + min)
+              const fn = foo.bind(this, time);
+              functions.push(fn);
+          }
+
+          t = new Throttler(functions, true);
+          await t.batch(15);
+          console.log('FINISHED');
+      })()
+    </script>
+  </head>
+</html>
