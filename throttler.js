@@ -1,8 +1,29 @@
 class Throttler {
 
+    /**
+     * The total number of async functions provided to the throttler
+     * instance.
+     * @type {number}
+     */
     #total;
+
+    /**
+     * The total number of async functions that have completed.
+     * @type {number}
+     */
     #finished;
+
+    /**
+     * Function values (instances) that are queued to either be ran in
+     * a batch or queue.
+     * @type {Array<function>}
+     */
     #queued;
+
+    /**
+     * Whether or not to print verbose logs.
+     * @type {boolean}
+     */
     #verbose;
 
     constructor(functions=[], verbose=false) {
@@ -16,6 +37,11 @@ class Throttler {
         this.#verbose = verbose;
     }
 
+    /**
+     * Function to start running the queued functions in batches of
+     * size n.
+     * @param {number} n
+     */
     async batch(n) {
 
         if (this.#queued.length === 0) {
@@ -40,6 +66,14 @@ class Throttler {
         await this.batch(n);
     }
 
+    /**
+     * Function to start running the queued functions in a queue of
+     * max capacity of size n. When one function terminates, another
+     * is added to the group of running functions (if there are any
+     * functions left in the queue).
+     * size n.
+     * @param {number} n
+     */
     async queue(n) {
         let active = 0;
         await new Promise((resolve, _) => {
