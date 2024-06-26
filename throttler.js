@@ -41,41 +41,37 @@ class Throttler {
     }
 
     async queue(n) {
-        let promiseResolve;
-        const promise = new Promise((resolve, _) => {
-            promiseResolve = resolve;
-        });
-
         let active = 0;
-        const queuePrime = async (fn) => {
+        await new Promise((resolve, _) => {
+            const queuePrime = async (fn) => {
+                active++;
 
-            active++;
+                if (this.#verbose) {
+                    console.log(`Throttler: Queue Capacity ${active}/${n}`);
+                }
 
-            if (this.#verbose) {
-                console.log(`Throttler: Queue Capacity ${active}/${n}`);
+                const startTime = performance.now();
+                await fn();
+                this.#finished++;
+                active--;
+
+                if (this.#verbose) {
+                    const deltaTime = (performance.now() - startTime) / 1e3;
+                    console.log(`Throttler: ${this.#finished}/${this.#total} (Job Time: ${deltaTime}s)`);
+                }
+
+                if (this.#queued.length > 0 && active < n) {
+                    queuePrime(this.#queued.shift());
+                }
+
+                if (this.#total === this.#finished) {
+                    resolve();
+                }
+            };
+
+            while (this.#queued.length > 0 && active < n) {
+                queuePrime(this.#queued.shift());
             }
-
-            const startTime = performance.now();
-            await fn();
-            this.#finished++;
-            active--;
-
-            if (this.#verbose) {
-                const deltaTime = (performance.now() - startTime) / 1e3;
-                console.log(`Throttler: ${this.#finished}/${this.#total} (Job Time: ${deltaTime}s)`);
-            }
-
-            if (this.#queued.length > 0 && active < n) {
-                await queuePrime(this.#queued.shift());
-            }
-
-            if (this.#total === this.#finished) {
-                promiseResolve();
-            }
-        }
-
-        this.#queued.splice(0, n).map(queuePrime);
-
-        await promise;
+        });
     }
 }
