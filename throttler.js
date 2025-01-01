@@ -86,9 +86,9 @@ class Throttler {
                 active++;
 
                 if (this.#verbose) {
-                    console.log('[THROTTLER] Enqueue'
-                                + `\n\t[CAPACITY] ${active}/${n}`
-                                + `\n\t[STATUS] ${this.#finished}/${this.#total}`);
+                    console.log('[THROTTLER] Enqueue');
+                    console.log(`\t[CAPACITY] ${active}/${n}`);
+                    console.log(`\t[STATUS] ${this.#finished}/${this.#total}`);
                 }
 
                 const startTime = performance.now();
@@ -98,10 +98,10 @@ class Throttler {
 
                 if (this.#verbose) {
                     const deltaTime = (performance.now() - startTime) / 1e3;
-                    console.log('[THROTTLER] Dequeue'
-                                + `\n\t[CAPACITY] ${active}/${n}`
-                                + `\n\t[PROGRESS] ${this.#finished}/${this.#total}`
-                                + `\n\t[JOB Time] ${deltaTime}s`);
+                    console.log('[THROTTLER] Dequeue');
+                    console.log(`\t[CAPACITY] ${active}/${n}`);
+                    console.log(`\t[PROGRESS] ${this.#finished}/${this.#total}`);
+                    console.log(`\t[JOB Time] ${deltaTime}s`);
                 }
 
                 if (this.#queued.length > 0 && active < n) {
